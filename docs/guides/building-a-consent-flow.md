@@ -1,0 +1,137 @@
+---
+title: Building a Consent Flow
+description: Meet CMS requirements for user authorization, data transparency, and consent revocation.
+---
+
+# Building a Consent Flow
+
+Before your app can access someone's Medicare data, they have to consent. CMS has specific requirements for how you present this to users. Getting this right is important — it's one of the things the Blue Button team reviews before granting production access.
+
+## What CMS requires
+
+The core principle: **A Medicare enrollee should never be surprised to learn how their data is being used.**
+
+Your app must:
+
+1. Clearly explain what data you're requesting and why, before the user authorizes
+2. Let the user actively opt in (no pre-checked boxes or default consent)
+3. Explain how data will be used, stored, and shared
+4. Provide a way to revoke access and request data deletion
+
+## What users must see before authorizing
+
+Before redirecting the user to Medicare.gov for authorization, your app should clearly present:
+
+- **What data you're requesting** — Claims, demographics, coverage — be specific
+- **Why you need it** — What your app does with the data
+- **Who else sees it** — Whether data is shared with third parties, and if so, who and why
+- **How long you keep it** — Your data retention policy
+- **How to revoke access** — That they can disconnect at any time
+
+::: tip
+Short, contextual messages in your UI are far more effective than burying this information in a privacy policy. A quick "We're about to request your Medicare claims data so we can show you your health spending history" goes a long way.
+:::
+
+## The authorization redirect
+
+When you redirect the user to the Blue Button `/authorize` endpoint, they see a Medicare.gov login screen followed by a consent screen. The consent screen shows:
+
+- Your app name
+- What data scopes you're requesting
+- An option to deny access to demographic information (even if you requested the `patient/Patient.rs` scope)
+
+You don't control this screen — CMS does. But you should prepare the user for what they'll see.
+
+::: warning
+Enrollees can always choose to block access to their demographic data on the Medicare.gov consent screen, even if your app requests it. Build your app to handle a `403` from the `/Patient` endpoint.
+:::
+
+### Language support
+
+The authorization screens are available in English and Spanish. Pass `lang=es` in the authorize URL for Spanish, or let the user's browser `Accept-Language` header determine the language.
+
+## Handle consent revocation
+
+Enrollees can revoke your app's access in two ways:
+
+1. **From Medicare.gov** — In the "My Connected Apps" section of their Medicare.gov account
+2. **From your app** — You should provide a disconnect option
+
+When access is revoked, your access and refresh tokens become invalid. Handle this gracefully:
+
+```bash
+# Revoke a token programmatically
+curl -X POST "https://api.bluebutton.cms.gov/v2/o/revoke/" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -u "YOUR_CLIENT_ID:YOUR_CLIENT_SECRET" \
+  -d "token=THE_ACCESS_TOKEN"
+```
+
+Your app should:
+
+- Detect when a token is revoked (you'll get `invalid_grant` errors)
+- Show a clear message explaining that access was disconnected
+- Offer an easy way to reconnect if the user wants to
+- Follow your data retention policy — delete data if that's what you've promised
+
+## Example consent patterns
+
+Good consent flows typically include:
+
+### Pre-authorization screen
+
+Before the OAuth redirect, show a screen that explains:
+
+> **Connect your Medicare account**
+>
+> We'll request access to your Medicare claims data, including doctor visits, hospital stays, and prescriptions from the last 3 years.
+>
+> We use this data to [your specific use case]. We don't share your data with third parties.
+>
+> You can disconnect at any time from your account settings.
+>
+> [Connect to Medicare] [Learn more]
+
+### Post-authorization confirmation
+
+After the user returns from Medicare.gov:
+
+> **Connected!**
+>
+> We're now loading your Medicare data. This may take a moment.
+>
+> You can manage or revoke this connection anytime in Settings.
+
+### Disconnect option
+
+In account settings, provide a clear disconnect button with an explanation of what happens:
+
+> **Medicare connection: Active**
+>
+> Connected on January 15, 2026.
+>
+> [Disconnect] — This will stop your app from accessing new Medicare data. Previously loaded data will be [deleted / retained per your policy].
+
+## Common mistakes
+
+These issues frequently delay production approval:
+
+- **No pre-auth explanation** — Sending users straight to Medicare.gov without context
+- **Default consent** — Pre-checking consent boxes instead of requiring active opt-in
+- **No disconnect option** — Missing or hard-to-find way to revoke access
+- **Vague data usage** — Saying "we use your data to improve our services" instead of being specific
+- **Missing breach notification** — Not explaining what happens if there's a security incident
+- **Privacy policy conflicts** — Your privacy policy says one thing, your UI says another
+
+## Privacy policy requirements
+
+Your privacy policy is reviewed during the production access process. It must cover:
+
+- How data is collected, used, stored, and shared
+- Whether data is shared with third parties (and if so, who and for what purpose)
+- What happens to data if the user revokes access or closes their account
+- How users are notified of privacy policy changes
+- How users are notified of security breaches
+- Compliance with the FTC's [Health Breach Notification Rule](https://www.ftc.gov/legal-library/browse/rules/health-breach-notification-rule)
+
+For full requirements, see [Production Requirements](../production/requirements.md).

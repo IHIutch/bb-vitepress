@@ -1,18 +1,24 @@
 {
   "name": "bb-vitepress",
   "version": "1.0.0",
-  "description": "",
+  "private": true,
   "scripts": {
-    "dev": "vitepress dev docs",
-    "build": "vitepress build docs",
-    "preview": "vitepress preview docs",
-    "deploy": "vitepress build docs && wrangler deploy"
+    "dev:ab2d": "pnpm --filter @bb/ab2d dev",
+    "dev:bb2": "pnpm --filter @bb/bb2 dev",
+    "dev:bcda": "pnpm --filter @bb/bcda dev",
+    "dev:dpc": "pnpm --filter @bb/dpc dev",
+    "build:ab2d": "pnpm --filter @bb/ab2d build",
+    "build:bb2": "pnpm --filter @bb/bb2 build",
+    "build:bcda": "pnpm --filter @bb/bcda build",
+    "build:dpc": "pnpm --filter @bb/dpc build",
+    "build:all": "pnpm --filter '@bb/*' build",
+    "cf-deploy:ab2d": "pnpm --filter @bb/ab2d cf-deploy",
+    "cf-deploy:bb2": "pnpm --filter @bb/bb2 cf-deploy",
+    "cf-deploy:bcda": "pnpm --filter @bb/bcda cf-deploy",
+    "cf-deploy:dpc": "pnpm --filter @bb/dpc cf-deploy",
+    "cf-deploy:all": "pnpm --filter '@bb/*' cf-deploy"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
-    "vitepress": "2.0.0-alpha.17",
     "wrangler": "^4.80.0"
   }
 }

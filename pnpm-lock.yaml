@@ -8,12 +8,33 @@ importers:
 
   .:
     devDependencies:
-      vitepress:
-        specifier: 2.0.0-alpha.17
-        version: 2.0.0-alpha.17(postcss@8.5.8)
       wrangler:
         specifier: ^4.80.0
         version: 4.80.0
+
+  ab2d:
+    devDependencies:
+      vitepress:
+        specifier: 2.0.0-alpha.17
+        version: 2.0.0-alpha.17(postcss@8.5.8)
+
+  bb2:
+    devDependencies:
+      vitepress:
+        specifier: 2.0.0-alpha.17
+        version: 2.0.0-alpha.17(postcss@8.5.8)
+
+  bcda:
+    devDependencies:
+      vitepress:
+        specifier: 2.0.0-alpha.17
+        version: 2.0.0-alpha.17(postcss@8.5.8)
+
+  dpc:
+    devDependencies:
+      vitepress:
+        specifier: 2.0.0-alpha.17
+        version: 2.0.0-alpha.17(postcss@8.5.8)
 
 packages:
 

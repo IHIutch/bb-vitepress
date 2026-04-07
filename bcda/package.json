@@ -1,0 +1,14 @@
+{
+  "name": "@bb/bcda",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vitepress dev docs",
+    "build": "vitepress build docs",
+    "preview": "vitepress preview docs",
+    "cf-deploy": "vitepress build docs && wrangler deploy"
+  },
+  "devDependencies": {
+    "vitepress": "2.0.0-alpha.17"
+  }
+}
